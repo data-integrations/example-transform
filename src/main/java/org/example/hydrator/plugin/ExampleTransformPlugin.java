@@ -34,7 +34,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * ETL Transform Plugin Example - This provides a good starting point for building your own Transform Plugin
+ * Hydrator Transform Plugin Example - This provides a good starting point for building your own Transform Plugin
  * For full documentation, check out: http://docs.cask.co/cdap/current/en/hydrator-manual/developing-plugins/index.html
  */
 @Plugin(type = Transform.PLUGIN_TYPE)
