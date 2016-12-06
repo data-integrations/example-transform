@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package co.cask.hydrator.plugin.example;
+package org.example.hydrator.plugin;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -34,12 +34,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * ETL Transform Plugin Shell - This provides a good starting point for building your own Transform Plugin
+ * ETL Transform Plugin Example - This provides a good starting point for building your own Transform Plugin
  * For full documentation, check out: http://docs.cask.co/cdap/current/en/hydrator-manual/developing-plugins/index.html
  */
 @Plugin(type = Transform.PLUGIN_TYPE)
 @Name("ExampleTransform") // <- NOTE: The name of the plugin should match the name of the docs and widget json files.
-@Description("This is my transform")
+@Description("This is an example transform.")
 public class ExampleTransformPlugin extends Transform<StructuredRecord, StructuredRecord> {
   // If you want to log things, you will need this line
   private static final Logger LOG = LoggerFactory.getLogger(ExampleTransformPlugin.class);

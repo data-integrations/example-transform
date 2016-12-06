@@ -18,7 +18,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>co.cask.hydrator.plugins</groupId>
+  <groupId>org.example.hydrator.plugins</groupId>
   <artifactId>example-transform</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -45,7 +45,7 @@
     <!-- this is here because project.basedir evaluates to null in the script build step -->
     <main.basedir>${project.basedir}</main.basedir>
     <!-- This is the list of packages where your code exists. You can add multiple and separated with a ; or use wildcards *. -->
-    <exported-packages>co.cask.hydrator.plugin.*</exported-packages>
+    <exported-packages>org.example.hydrator.plugin*</exported-packages>
   </properties>
 
   <repositories>
