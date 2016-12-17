@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package org.example.hydrator.plugin;
 
 import co.cask.cdap.api.annotation.Description;
@@ -26,6 +27,7 @@ import co.cask.cdap.etl.api.Emitter;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.Transform;
 import co.cask.cdap.etl.api.TransformContext;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   // Usually, you will need a private variable to store the config that was passed to your class
   private final Config config;
 
-  // This is only required for testing.
+  @VisibleForTesting
   public ExampleTransformPlugin(Config config) {
     this.config = config;
   }
@@ -65,7 +67,8 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     super.configurePipeline(pipelineConfigurer);
     // It's usually a good idea to validate the configuration at this point. It will stop the pipeline from being
     // published if this throws an error.
-    config.validate();
+    Schema inputSchema = pipelineConfigurer.getStageConfigurer().getInputSchema();
+    config.validate(inputSchema);
     try {
       pipelineConfigurer.getStageConfigurer().setOutputSchema(Schema.parseJson(config.schema));
     } catch (IOException e) {
@@ -82,9 +85,6 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   @Override
   public void initialize(TransformContext context) throws Exception {
     super.initialize(context);
-    // If your config options have Macros, it is usually a good idea to validate them again now that all the values
-    // are substituted in.
-    config.validate();
     // Initialize costly connections or large objects here which will be used in the transform.
   }
 
@@ -149,7 +149,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
       this.schema = schema;
     }
 
-    private void validate() throws IllegalArgumentException {
+    private void validate(Schema inputSchema) throws IllegalArgumentException {
       // It's usually a good idea to check the schema. Sometimes users edit
       // the JSON config directly and make mistakes.
       try {
@@ -162,6 +162,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
         throw new IllegalArgumentException("myOption is a required field.");
       }
       // You can use the containsMacro() function to determine if you can validate at deploy time or runtime.
+      // If your plugin depends on fields from the input schema being present or the right type, use inputSchema
     }
   }
 }
