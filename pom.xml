@@ -170,8 +170,9 @@
                       var widgetsFile = widgetsFiles[i];
                       if (widgetsFile.isFile()) {
                         var propertyName = "widgets." + widgetsFile.getName();
+                        propertyName = propertyName.toString();
                         // if the filename ends with .json
-                        if (propertyName.indexOf(".json", propertyName.length - 5) !== -1) {
+                        if (propertyName.indexOf(".json", propertyName.length() - 5) !== -1) {
                           // strip the .json
                           propertyName = propertyName.slice(0, -5);
                           var contents = new java.lang.String(java.nio.file.Files.readAllBytes(widgetsFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
@@ -190,8 +191,9 @@
                       var docFile = docFiles[i];
                       if (docFile.isFile()) {
                         var propertyName = "doc." + docFile.getName();
+                        propertyName = propertyName.toString();
                         // if the filename ends with .md
-                        if (propertyName.indexOf(".md", propertyName.length - 3) !== -1) {
+                        if (propertyName.indexOf(".md", propertyName.length() - 3) !== -1) {
                           // strip the extension
                           propertyName = propertyName.slice(0, -3);
                           var contents = new java.lang.String(java.nio.file.Files.readAllBytes(docFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
