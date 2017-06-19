@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Cask Data, Inc.
+ * Copyright © 2017 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 
 /**
  * Hydrator Transform Plugin Example - This provides a good starting point for building your own Transform Plugin
- * For full documentation, check out: http://docs.cask.co/cdap/current/en/hydrator-manual/developing-plugins/index.html
+ * For full documentation, check out: https://docs.cask.co/cdap/current/en/developer-manual/pipelines/developing-plugins/index.html
  */
 @Plugin(type = Transform.PLUGIN_TYPE)
 @Name("ExampleTransform") // <- NOTE: The name of the plugin should match the name of the docs and widget json files.

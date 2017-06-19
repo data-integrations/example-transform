@@ -27,19 +27,17 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cdap.version>3.6.0</cdap.version>
-    <hydrator.version>1.4.0</hydrator.version>
+    <cdap.version>4.2.0</cdap.version>
+    <hydrator.version>1.7.0</hydrator.version>
     <guava.version>19.0</guava.version>
     <!-- properties for script build step that creates the config files for the artifacts -->
     <widgets.dir>widgets</widgets.dir>
     <docs.dir>docs</docs.dir>
     <!-- This is the version range for the app.parents that this plugin is valid for. Usually this will correspond with
          the CDAP version, but not always. -->
-    <etl.versionRange>[3.3.0,10.0.0-SNAPSHOT)</etl.versionRange>
+    <etl.versionRange>[4.2.0,10.0.0-SNAPSHOT)</etl.versionRange>
     <!-- These are the application template artifacts that this plugin will be available for. -->
     <app.parents>
-      system:cdap-etl-batch,
-      system:cdap-etl-realtime,
       system:cdap-data-pipeline,
       system:cdap-data-streams
     </app.parents>
@@ -89,6 +87,12 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>co.cask.cdap</groupId>
+      <artifactId>hydrator-test</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
