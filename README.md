@@ -1,14 +1,16 @@
-# Example Hydrator Transform
+# Example Transform
 
-<a href="https://cdap-users.herokuapp.com/"><img alt="Join CDAP community" src="https://cdap-users.herokuapp.com/badge.svg?t=1"/></a> [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<a href="https://cdap-users.herokuapp.com/"><img alt="Join CDAP community" src="https://cdap-users.herokuapp.com/badge.svg?t=1"/></a> ![cdap-transform](https://cdap-users.herokuapp.com/assets/cdap-transform.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Join CDAP community](https://cdap-users.herokuapp.com/badge.svg?t=wrangler)](https://cdap-users.herokuapp.com?t=1)
 
-This is an example plugin for [Hydrator](http://cask.co/products/hydrator/). 
+This is an example plugin for [CDAP Pipelines](https://docs.cask.co/cdap/4.3.1/en/developer-manual/pipelines/index.html). 
  
 It is fully free and fully open source under the Apache 2.0 license.
 
 ## Documentation
 
-This is a good starting point, but for more information about developing Hydrator plugins, you can check out the [Hydrator Docs](http://docs.cask.co/cdap/current/en/hydrator-manual/developing-plugins/index.html).
+This is a good starting point, but for more information about developing plugins, you can check out the [CDAP Pipelines Docs](https://docs.cask.co/cdap/4.3.1/en/developer-manual/pipelines/developing-plugins/index.html).
 
 ## Need Help?
 
