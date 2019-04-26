@@ -20,22 +20,22 @@
 
   <groupId>org.example.hydrator.plugins</groupId>
   <artifactId>example-transform</artifactId>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
 
   <name>Example Transform</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cdap.version>4.2.0</cdap.version>
-    <hydrator.version>1.7.0</hydrator.version>
+    <cdap.version>5.1.2</cdap.version>
+    <hydrator.version>2.1.0</hydrator.version>
     <guava.version>19.0</guava.version>
     <!-- properties for script build step that creates the config files for the artifacts -->
     <widgets.dir>widgets</widgets.dir>
     <docs.dir>docs</docs.dir>
     <!-- This is the version range for the app.parents that this plugin is valid for. Usually this will correspond with
          the CDAP version, but not always. -->
-    <etl.versionRange>[4.2.0,10.0.0-SNAPSHOT)</etl.versionRange>
+    <etl.versionRange>[5.0.0,6.0.0-SNAPSHOT)</etl.versionRange>
     <!-- These are the application template artifacts that this plugin will be available for. -->
     <app.parents>
       system:cdap-data-pipeline,
