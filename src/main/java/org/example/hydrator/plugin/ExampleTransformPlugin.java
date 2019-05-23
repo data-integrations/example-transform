@@ -47,6 +47,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
   // Usually, you will need a private variable to store the config that was passed to your class
   private final Config config;
+  private Schema outputSchema;
 
   public ExampleTransformPlugin(Config config) {
     this.config = config;
@@ -83,7 +84,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   @Override
   public void initialize(TransformContext context) throws Exception {
     super.initialize(context);
-    // Initialize costly connections or large objects here which will be used in the transform.
+    outputSchema = Schema.parseJson(config.schema);
   }
 
   /**
@@ -95,8 +96,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
    */
   @Override
   public void transform(StructuredRecord input, Emitter<StructuredRecord> emitter) throws Exception {
-    Schema outputSchema = Schema.parseJson(config.schema);
-    // Get all the fields from the input record
+    // Get all the fields that are in the output schema
     List<Schema.Field> fields = outputSchema.getFields();
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
