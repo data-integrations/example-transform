@@ -16,7 +16,6 @@
 
 package org.example.hydrator.plugin;
 
-import com.google.common.annotations.VisibleForTesting;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -49,7 +48,6 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   // Usually, you will need a private variable to store the config that was passed to your class
   private final Config config;
 
-  @VisibleForTesting
   public ExampleTransformPlugin(Config config) {
     this.config = config;
   }
@@ -166,3 +164,4 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     }
   }
 }
+
