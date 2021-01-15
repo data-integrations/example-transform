@@ -39,17 +39,17 @@ import javax.annotation.Nullable;
  * For full documentation, check out: https://docs.cask.co/cdap/current/en/developer-manual/pipelines/developing-plugins/index.html
  */
 @Plugin(type = Transform.PLUGIN_TYPE)
-@Name("ExampleTransform") // <- NOTE: The name of the plugin should match the name of the docs and widget json files.
+@Name("SimpleMask") // <- NOTE: The name of the plugin should match the name of the docs and widget json files.
 @Description("This is an example transform.")
-public class ExampleTransformPlugin extends Transform<StructuredRecord, StructuredRecord> {
+public class SimpleMask extends Transform<StructuredRecord, StructuredRecord> {
   // If you want to log things, you will need this line
-  private static final Logger LOG = LoggerFactory.getLogger(ExampleTransformPlugin.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleMask.class);
 
   // Usually, you will need a private variable to store the config that was passed to your class
   private final Config config;
   private Schema outputSchema;
 
-  public ExampleTransformPlugin(Config config) {
+  public SimpleMask(Config config) {
     this.config = config;
   }
 

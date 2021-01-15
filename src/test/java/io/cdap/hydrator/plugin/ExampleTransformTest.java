@@ -34,8 +34,8 @@ public class ExampleTransformTest {
                                                       Schema.Field.of("e", Schema.of(Schema.Type.STRING)));
   @Test
   public void testMyTransform() throws Exception {
-    ExampleTransformPlugin.Config config = new ExampleTransformPlugin.Config("SomeValue", null, INPUT.toString());
-    Transform<StructuredRecord, StructuredRecord> transform = new ExampleTransformPlugin(config);
+    SimpleMask.Config config = new SimpleMask.Config("SomeValue", null, INPUT.toString());
+    Transform<StructuredRecord, StructuredRecord> transform = new SimpleMask(config);
     transform.initialize(null);
 
     MockEmitter<StructuredRecord> emitter = new MockEmitter<>();
