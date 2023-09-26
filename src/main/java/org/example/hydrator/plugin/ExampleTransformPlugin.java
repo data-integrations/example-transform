@@ -100,10 +100,21 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     List<Schema.Field> fields = outputSchema.getFields();
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
+
     // Add all the values to the builder
     for (Schema.Field field : fields) {
       String name = field.getName();
       if (input.get(name) != null) {
+
+        // Comparing fields for schema validation
+
+        /*
+        1. Establish a list of fields and data types from GCS schema bucket
+        2. Use a for loop to compare each field of the raw data to schema data types
+           Can use built-in Java functions for thi
+        3. Records that pass the validation should be emitted
+        */
+
         builder.set(name, input.get(name));
       }
     }
