@@ -103,6 +103,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
     // Add all the values to the builder
     for (Schema.Field field : fields) {
+
       String name = field.getName();
       if (input.get(name) != null) {
 
@@ -115,7 +116,14 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
         3. Records that pass the validation should be emitted
         */
 
-        builder.set(name, input.get(name));
+        try {
+          Integer.parseInt(input.get(name));
+          builder.set(name, Integer.parseInt(input.get(name)));
+        }
+        catch (Exception e) {
+          builder.set(name, "Invalid");
+        }
+
       }
     }
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
