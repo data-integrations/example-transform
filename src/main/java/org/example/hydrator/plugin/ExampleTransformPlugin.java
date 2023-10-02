@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -101,10 +102,23 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
 
+    // Create schema list
+    ArrayList<String> inputSchema = new ArrayList<>();
+    inputSchema.add("int");
+    inputSchema.add("int");
+    inputSchema.add("string");
+    inputSchema.add("string");
+
+    // Schema list iterator
+    int iterator = 0;
+
     // Add all the values to the builder
     for (Schema.Field field : fields) {
+      System.out.println(field);
+      System.out.println(iterator);
 
       String name = field.getName();
+
       if (input.get(name) != null) {
 
         // Comparing fields for schema validation
@@ -116,14 +130,27 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
         3. Records that pass the validation should be emitted
         */
 
-        try {
-          Integer.parseInt(input.get(name));
-          builder.set(name, Integer.parseInt(input.get(name)));
-        }
-        catch (Exception e) {
-          builder.set(name, "Invalid");
+        if (inputSchema.get(iterator).equals("int")) {
+
+          try {
+            Integer.parseInt(input.get(name));
+            builder.set(name, Integer.parseInt(input.get(name)));
+          } catch (Exception e) {
+            builder.set(name, "Schema error");
+          }
         }
 
+        else if (inputSchema.get(iterator).equals("string")) {
+          System.out.println(iterator);
+          try {
+            String outputString = input.get(name).toString();
+            builder.set(name, outputString);
+          } catch (Exception e) {
+            System.out.println(e);
+            builder.set(name, "Schema error");
+          }
+        }
+        iterator++;
       }
     }
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
