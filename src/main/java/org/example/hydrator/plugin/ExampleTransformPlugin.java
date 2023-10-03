@@ -23,10 +23,7 @@ import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.api.plugin.PluginConfig;
-import io.cdap.cdap.etl.api.Emitter;
-import io.cdap.cdap.etl.api.PipelineConfigurer;
-import io.cdap.cdap.etl.api.Transform;
-import io.cdap.cdap.etl.api.TransformContext;
+import io.cdap.cdap.etl.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,11 +66,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     // published if this throws an error.
     Schema inputSchema = pipelineConfigurer.getStageConfigurer().getInputSchema();
     config.validate(inputSchema);
-    try {
-      pipelineConfigurer.getStageConfigurer().setOutputSchema(Schema.parseJson(config.schema));
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Output schema cannot be parsed.", e);
-    }
+    pipelineConfigurer.getStageConfigurer().setOutputSchema(getOutputSchema(config, inputSchema));
   }
 
   /**
@@ -85,7 +78,9 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   @Override
   public void initialize(TransformContext context) throws Exception {
     super.initialize(context);
-    outputSchema = Schema.parseJson(config.schema);
+    //outputSchema = Schema.parseJson(config.schema);
+    Schema inputSchema = Schema.parseJson(config.schema);
+    outputSchema = getOutputSchema(config, inputSchema);
   }
 
   /**
@@ -101,6 +96,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     List<Schema.Field> fields = outputSchema.getFields();
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
+    StructuredRecord.Builder error = StructuredRecord.builder(outputSchema);
 
     // Create schema list
     ArrayList<String> inputSchema = new ArrayList<>();
@@ -114,8 +110,6 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
     // Add all the values to the builder
     for (Schema.Field field : fields) {
-      System.out.println(field);
-      System.out.println(iterator);
 
       String name = field.getName();
 
@@ -135,28 +129,44 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
           try {
             Integer.parseInt(input.get(name));
             builder.set(name, Integer.parseInt(input.get(name)));
+            System.out.println(Integer.parseInt(input.get(name)) + "was successful");
           } catch (Exception e) {
-            builder.set(name, "Schema error");
+            builder.set(name, input.get(name));
           }
         }
 
         else if (inputSchema.get(iterator).equals("string")) {
-          System.out.println(iterator);
+
           try {
             String outputString = input.get(name).toString();
             builder.set(name, outputString);
+            System.out.println(outputString + "was successful");
           } catch (Exception e) {
-            System.out.println(e);
-            builder.set(name, "Schema error");
+            builder.set(name, input.get(name));
           }
         }
         iterator++;
       }
     }
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
+    //InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
+
 
     // Finally, build and emit the record.
     emitter.emit(builder.build());
+    //emitter.emitError(invalidEntry);
+  }
+
+  // Set Output Schema
+  private static Schema getOutputSchema(Config config, Schema inputSchema) {
+    List<Schema.Field> fields = new ArrayList<>();
+
+    fields.add(Schema.Field.of("int-valid", Schema.of(Schema.Type.INT)));
+    fields.add(Schema.Field.of("int-invalid", Schema.of(Schema.Type.INT)));
+    fields.add(Schema.Field.of("str-valid", Schema.of(Schema.Type.STRING)));
+    fields.add(Schema.Field.of("str-invalid", Schema.of(Schema.Type.STRING)));
+
+    return Schema.recordOf(inputSchema.getRecordName(), fields);
   }
 
   /**
