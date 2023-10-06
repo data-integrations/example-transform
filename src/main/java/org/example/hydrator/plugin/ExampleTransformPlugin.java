@@ -122,16 +122,28 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
         2. Use a for loop to compare each field of the raw data to schema data types
            Can use built-in Java functions for thi
         3. Records that pass the validation should be emitted
+
+        switch (inputSchema.get(iterator)) {
+          case "Int" -> int_validation(input.get(name));
+        };
+
         */
 
         if (inputSchema.get(iterator).equals("int")) {
-
           try {
             Integer.parseInt(input.get(name));
             builder.set(name, Integer.parseInt(input.get(name)));
             System.out.println(Integer.parseInt(input.get(name)) + "was successful");
+
+            error.set(name, input.get(name));
+
           } catch (Exception e) {
+            error.set(name, input.get(name));
+
+            // Need to remove records in the future
+            // Rather than add all fields to both error and non-error schemas
             builder.set(name, input.get(name));
+
           }
         }
 
@@ -141,7 +153,12 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
             String outputString = input.get(name).toString();
             builder.set(name, outputString);
             System.out.println(outputString + "was successful");
+
+            error.set(name, input.get(name));
+
           } catch (Exception e) {
+            error.set(name, input.get(name));
+
             builder.set(name, input.get(name));
           }
         }
@@ -149,12 +166,12 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
       }
     }
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
-    //InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
+    InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
 
 
     // Finally, build and emit the record.
     emitter.emit(builder.build());
-    //emitter.emitError(invalidEntry);
+    emitter.emitError(invalidEntry);
   }
 
   // Set Output Schema
@@ -219,5 +236,11 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
       // If your plugin depends on fields from the input schema being present or the right type, use inputSchema
     }
   }
+
+  /*
+  public void int_validation(String value){
+
+  }
+  */
 }
 

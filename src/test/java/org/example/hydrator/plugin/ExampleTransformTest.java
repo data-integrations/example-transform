@@ -52,7 +52,7 @@ public class ExampleTransformTest {
     //Assert.assertEquals("Schema error", emitter.getEmitted().get(0).get("int-invalid"));
     //Assert.assertEquals("Name", emitter.getEmitted().get(0).get("str-valid"));
     //Assert.assertEquals("30", emitter.getEmitted().get(0).get("str-invalid"));
-    //Assert.assertEquals(5, emitter.getErrors().get(0).getErrorCode());
+    Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
 
   }
 }
