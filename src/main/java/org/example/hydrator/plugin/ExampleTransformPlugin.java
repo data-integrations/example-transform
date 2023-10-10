@@ -100,10 +100,15 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
     // Create schema list
     ArrayList<String> inputSchema = new ArrayList<>();
-    inputSchema.add("int");
-    inputSchema.add("int");
     inputSchema.add("string");
-    inputSchema.add("string");
+    inputSchema.add("int");
+
+    // Create list of records that will be dynamically updated
+    // For valid records
+    ArrayList<Object> validRecordList = new ArrayList<>();
+
+    // For invalid records
+    ArrayList<Object> invalidRecordList = new ArrayList<>();
 
     // Schema list iterator
     int iterator = 0;
@@ -131,60 +136,94 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
         if (inputSchema.get(iterator).equals("int")) {
           try {
-            Integer.parseInt(input.get(name));
-            builder.set(name, Integer.parseInt(input.get(name)));
-            System.out.println(Integer.parseInt(input.get(name)) + "was successful");
+            System.out.println((String) input.get(name));
 
-            error.set(name, input.get(name));
+            Integer.parseInt(input.get(name));
+            validRecordList.add(Integer.parseInt(input.get(name)));
+
+            //builder.set(name, Integer.parseInt(input.get(name)));
 
           } catch (Exception e) {
-            error.set(name, input.get(name));
+
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+            //error.set(name, input.get(name));
 
             // Need to remove records in the future
             // Rather than add all fields to both error and non-error schemas
-            builder.set(name, input.get(name));
+            // builder.set(name, input.get(name));
 
           }
-        }
-
-        else if (inputSchema.get(iterator).equals("string")) {
+        } else if (inputSchema.get(iterator).equals("string")) {
 
           try {
             String outputString = input.get(name).toString();
-            builder.set(name, outputString);
-            System.out.println(outputString + "was successful");
 
-            error.set(name, input.get(name));
+            validRecordList.add(outputString);
+            //builder.set(name, outputString);
+
+            //error.set(name, outputString);
 
           } catch (Exception e) {
-            error.set(name, input.get(name));
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
 
-            builder.set(name, input.get(name));
+            //error.set(name, input.get(name));
+
+            //builder.set(name, input.get(name));
           }
         }
         iterator++;
       }
     }
-    // If you wanted to make additional changes to the output record, this might be a good place to do it.
-    InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
+        int result = setRecords(invalidRecordList);
+        System.out.println(validRecordList.size());
 
+        int rt = 0;
+        // No errors
+        if (result == 1) {
+          while (rt < fields.size()) {
+            builder.set(fields.get(rt).getName(), validRecordList.get(rt));
+            rt++;
+          }
+        }
+        else if (result == 2) {
+          while (rt < fields.size()) {
+            error.set(fields.get(rt).getName(), validRecordList.get(rt));
+            rt++;
+          }
+        }
+
+    // If you wanted to make additional changes to the output record, this might be a good place to do it.
+    //InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
 
     // Finally, build and emit the record.
     emitter.emit(builder.build());
-    emitter.emitError(invalidEntry);
+    //emitter.emitError(invalidEntry);
   }
 
   // Set Output Schema
   private static Schema getOutputSchema(Config config, Schema inputSchema) {
     List<Schema.Field> fields = new ArrayList<>();
 
-    fields.add(Schema.Field.of("int-valid", Schema.of(Schema.Type.INT)));
-    fields.add(Schema.Field.of("int-invalid", Schema.of(Schema.Type.INT)));
-    fields.add(Schema.Field.of("str-valid", Schema.of(Schema.Type.STRING)));
-    fields.add(Schema.Field.of("str-invalid", Schema.of(Schema.Type.STRING)));
+    fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
+    fields.add(Schema.Field.of("age", Schema.of(Schema.Type.INT)));
 
     return Schema.recordOf(inputSchema.getRecordName(), fields);
   }
+
+  // Emit whole records
+  public static int setRecords(ArrayList<Object> invalidRecordList) {
+
+    if (invalidRecordList.isEmpty()) {
+     return 1;
+    }
+
+    else {
+      return 2;
+    }
+  }
+
 
   /**
    * This function will be called at the end of the pipeline. You can use it to clean up any variables or connections.

@@ -4,7 +4,7 @@
   },
   "configuration-groups": [
     {
-      "label": "Transform Configuration",
+      "label": "Schema Validation",
       "properties": [
         {
           "widget-type": "textbox",

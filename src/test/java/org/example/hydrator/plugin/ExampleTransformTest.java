@@ -27,15 +27,11 @@ import org.junit.Test;
  */
 public class ExampleTransformTest {
   private static final Schema INPUT = Schema.recordOf("input",
-                                                      // Raw data: string   Schema: int   Valid input data
-                                                      Schema.Field.of("int-valid", Schema.of(Schema.Type.STRING)),
-                                                      // Raw data: string   Schema: int   Invalid input data
-                                                      Schema.Field.of("int-invalid", Schema.of(Schema.Type.STRING)),
 
-                                                      // Raw data: string   Schema: string  Valid input data
-                                                      Schema.Field.of("str-valid", Schema.of(Schema.Type.STRING)),
-                                                      // Raw data: int   Schema: string  Invalid input data
-                                                      Schema.Field.of("str-invalid", Schema.of(Schema.Type.INT)));
+                                                      Schema.Field.of("name", Schema.of(Schema.Type.STRING)),
+
+                                                      Schema.Field.of("age", Schema.of(Schema.Type.STRING)));
+
   @Test
   public void testMyTransform() throws Exception {
     ExampleTransformPlugin.Config config = new ExampleTransformPlugin.Config("SomeValue", null, INPUT.toString());
@@ -44,15 +40,13 @@ public class ExampleTransformTest {
 
     MockEmitter<StructuredRecord> emitter = new MockEmitter<>();
     transform.transform(StructuredRecord.builder(INPUT)
-                          .set("int-valid", "20")
-                          .set("int-invalid", "Twenty")
-                          .set("str-valid", "Name")
-                          .set("str-invalid", 30).build(), emitter);
-    //Assert.assertEquals((Integer) 20, emitter.getEmitted().get(0).get("int-valid"));
-    //Assert.assertEquals("Schema error", emitter.getEmitted().get(0).get("int-invalid"));
+                          .set("name", "Ryan")
+                          .set("age", "43").build(), emitter);
+    Assert.assertEquals("Ryan", emitter.getEmitted().get(0).get("name"));
+    Assert.assertEquals((Integer) 43, emitter.getEmitted().get(0).get("age"));
     //Assert.assertEquals("Name", emitter.getEmitted().get(0).get("str-valid"));
     //Assert.assertEquals("30", emitter.getEmitted().get(0).get("str-invalid"));
-    Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
+    //Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
 
   }
 }
