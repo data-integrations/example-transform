@@ -39,14 +39,25 @@ public class ExampleTransformTest {
     transform.initialize(null);
 
     MockEmitter<StructuredRecord> emitter = new MockEmitter<>();
+
     transform.transform(StructuredRecord.builder(INPUT)
                           .set("name", "Ryan")
                           .set("age", "43").build(), emitter);
+
+    transform.transform(StructuredRecord.builder(INPUT)
+                          .set("name", "Louise")
+                          .set("age", "fourtythree").build(), emitter);
+
+    /*
+    StructuredRecord.Builder testBuilder = StructuredRecord.builder(INPUT);
+    testBuilder.set
+    */
+
     Assert.assertEquals("Ryan", emitter.getEmitted().get(0).get("name"));
     Assert.assertEquals((Integer) 43, emitter.getEmitted().get(0).get("age"));
-    //Assert.assertEquals("Name", emitter.getEmitted().get(0).get("str-valid"));
-    //Assert.assertEquals("30", emitter.getEmitted().get(0).get("str-invalid"));
-    //Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
+    //Assert.assertEquals("Louise", emitter.getEmitted().get(1).get("name"));
+    //Assert.assertEquals((Integer) 23, emitter.getEmitted().get(1).get("age"));
+    Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
 
   }
 }

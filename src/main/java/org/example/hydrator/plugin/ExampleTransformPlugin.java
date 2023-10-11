@@ -94,9 +94,10 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   public void transform(StructuredRecord input, Emitter<StructuredRecord> emitter) throws Exception {
     // Get all the fields that are in the output schema
     List<Schema.Field> fields = outputSchema.getFields();
+
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
-    StructuredRecord.Builder error = StructuredRecord.builder(outputSchema);
+    StructuredRecord.Builder error = StructuredRecord.builder(input.getSchema());
 
     // Create schema list
     ArrayList<String> inputSchema = new ArrayList<>();
@@ -195,11 +196,17 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
         }
 
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
-    //InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
 
-    // Finally, build and emit the record.
-    emitter.emit(builder.build());
-    //emitter.emitError(invalidEntry);
+    if (!invalidRecordList.isEmpty()) {
+      InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
+      emitter.emitError(invalidEntry);
+    }
+
+    else {
+
+      // Finally, build and emit the record.
+      emitter.emit(builder.build());
+    }
   }
 
   // Set Output Schema
