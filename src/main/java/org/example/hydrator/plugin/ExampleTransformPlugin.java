@@ -66,7 +66,15 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     // published if this throws an error.
     Schema inputSchema = pipelineConfigurer.getStageConfigurer().getInputSchema();
     config.validate(inputSchema);
-    pipelineConfigurer.getStageConfigurer().setOutputSchema(getOutputSchema(config, inputSchema));
+
+    Schema oschema;
+
+    try {
+       oschema = Schema.parseJson(config.schema);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    pipelineConfigurer.getStageConfigurer().setOutputSchema(oschema);
   }
 
   /**
@@ -80,7 +88,10 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     super.initialize(context);
     //outputSchema = Schema.parseJson(config.schema);
     Schema inputSchema = Schema.parseJson(config.schema);
-    outputSchema = getOutputSchema(config, inputSchema);
+
+    outputSchema = context.getOutputSchema();
+    System.out.println(outputSchema);
+    //outputSchema = getOutputSchema(config, inputSchema);
   }
 
   /**
@@ -101,8 +112,10 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
     // Create schema list
     ArrayList<String> inputSchema = new ArrayList<>();
-    inputSchema.add("string");
-    inputSchema.add("int");
+    for (Schema.Field fd : fields) {
+        inputSchema.add(fd.getSchema().toString().replace("\"", ""));
+        System.out.println(fd.getSchema());
+    }
 
     // Create list of records that will be dynamically updated
     // For valid records
