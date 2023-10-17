@@ -28,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -155,38 +158,108 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
             Integer.parseInt(input.get(name));
             validRecordList.add(Integer.parseInt(input.get(name)));
 
-            //builder.set(name, Integer.parseInt(input.get(name)));
-
           } catch (Exception e) {
 
             invalidRecordList.add(input.get(name));
             validRecordList.add(input.get(name));
-            //error.set(name, input.get(name));
-
-            // Need to remove records in the future
-            // Rather than add all fields to both error and non-error schemas
-            // builder.set(name, input.get(name));
 
           }
-        } else if (inputSchema.get(iterator).equals("string")) {
+
+        }
+
+        else if (inputSchema.get(iterator).equals("string")) {
 
           try {
             String outputString = input.get(name).toString();
 
             validRecordList.add(outputString);
-            //builder.set(name, outputString);
-
-            //error.set(name, outputString);
 
           } catch (Exception e) {
             invalidRecordList.add(input.get(name));
             validRecordList.add(input.get(name));
 
-            //error.set(name, input.get(name));
-
-            //builder.set(name, input.get(name));
           }
         }
+
+        else if (inputSchema.get(iterator).equals("float")) {
+
+          try {
+            Float.parseFloat(input.get(name));
+
+            validRecordList.add(Float.parseFloat(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("long")) {
+
+          try {
+            Long.parseLong(input.get(name));
+
+            validRecordList.add(Long.parseLong(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("double")) {
+
+          try {
+            Double.parseDouble(input.get(name));
+
+            validRecordList.add(Double.parseDouble(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("boolean")) {
+
+          try {
+            Boolean.parseBoolean(input.get(name));
+
+            validRecordList.add(Boolean.parseBoolean(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("bytes")) {
+
+          try {
+            Byte.parseByte(input.get(name));
+
+            validRecordList.add(Byte.parseByte(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        /*
+        else if (inputSchema.get(iterator).equals("timestamp")) {
+
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-uuuu HH:mm:ss:SSS");
+          try {
+            LocalDateTime.parse(input.get(name), formatter);
+            validRecordList.add(input.get(name));
+          }
+          catch (DateTimeParseException e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+        */
         iterator++;
       }
     }
@@ -228,6 +301,7 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
     fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
     fields.add(Schema.Field.of("age", Schema.of(Schema.Type.INT)));
+    fields.add(Schema.Field.of("date", Schema.of(Schema.Type.STRING)));
 
     return Schema.recordOf(inputSchema.getRecordName(), fields);
   }

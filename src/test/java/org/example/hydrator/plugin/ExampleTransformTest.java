@@ -30,7 +30,9 @@ public class ExampleTransformTest {
 
                                                       Schema.Field.of("name", Schema.of(Schema.Type.STRING)),
 
-                                                      Schema.Field.of("age", Schema.of(Schema.Type.STRING)));
+                                                      Schema.Field.of("age", Schema.of(Schema.Type.STRING)),
+
+                                                      Schema.Field.of("date", Schema.of(Schema.Type.STRING)));
 
   @Test
   public void testMyTransform() throws Exception {
@@ -42,11 +44,13 @@ public class ExampleTransformTest {
 
     transform.transform(StructuredRecord.builder(INPUT)
                           .set("name", "Ryan")
-                          .set("age", "43").build(), emitter);
+                          .set("age", "43")
+                          .set("date", "27-08-2023 15:14:13:321").build(), emitter);
 
     transform.transform(StructuredRecord.builder(INPUT)
                           .set("name", "Louise")
-                          .set("age", "fourtythree").build(), emitter);
+                          .set("age", "fourtythree")
+                          .set("date", "27;02;2023 15:13:11:987").build(), emitter);
 
     /*
     StructuredRecord.Builder testBuilder = StructuredRecord.builder(INPUT);
@@ -57,7 +61,7 @@ public class ExampleTransformTest {
     //Assert.assertEquals((Integer) 43, emitter.getEmitted().get(0).get("age"));
     //Assert.assertEquals("Louise", emitter.getEmitted().get(1).get("name"));
     //Assert.assertEquals((Integer) 23, emitter.getEmitted().get(1).get("age"));
-    //Assert.assertEquals(1, emitter.getErrors().get(0).getErrorCode());
+    Assert.assertEquals(1, emitter.getErrors().get(1).getErrorCode());
 
   }
 }
