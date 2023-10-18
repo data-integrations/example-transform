@@ -28,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -66,7 +69,15 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     // published if this throws an error.
     Schema inputSchema = pipelineConfigurer.getStageConfigurer().getInputSchema();
     config.validate(inputSchema);
-    pipelineConfigurer.getStageConfigurer().setOutputSchema(getOutputSchema(config, inputSchema));
+
+    Schema oschema;
+
+    try {
+       oschema = Schema.parseJson(config.schema);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    pipelineConfigurer.getStageConfigurer().setOutputSchema(oschema);
   }
 
   /**
@@ -80,7 +91,10 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
     super.initialize(context);
     //outputSchema = Schema.parseJson(config.schema);
     Schema inputSchema = Schema.parseJson(config.schema);
-    outputSchema = getOutputSchema(config, inputSchema);
+
+    outputSchema = context.getOutputSchema();
+    System.out.println(outputSchema);
+    //outputSchema = getOutputSchema(config, inputSchema);
   }
 
   /**
@@ -94,16 +108,24 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
   public void transform(StructuredRecord input, Emitter<StructuredRecord> emitter) throws Exception {
     // Get all the fields that are in the output schema
     List<Schema.Field> fields = outputSchema.getFields();
+
     // Create a builder for creating the output record
     StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
-    StructuredRecord.Builder error = StructuredRecord.builder(outputSchema);
+    StructuredRecord.Builder error = StructuredRecord.builder(input.getSchema());
 
     // Create schema list
     ArrayList<String> inputSchema = new ArrayList<>();
-    inputSchema.add("int");
-    inputSchema.add("int");
-    inputSchema.add("string");
-    inputSchema.add("string");
+    for (Schema.Field fd : fields) {
+        inputSchema.add(fd.getSchema().toString().replace("\"", ""));
+        System.out.println(fd.getSchema());
+    }
+
+    // Create list of records that will be dynamically updated
+    // For valid records
+    ArrayList<Object> validRecordList = new ArrayList<>();
+
+    // For invalid records
+    ArrayList<Object> invalidRecordList = new ArrayList<>();
 
     // Schema list iterator
     int iterator = 0;
@@ -131,60 +153,171 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
 
         if (inputSchema.get(iterator).equals("int")) {
           try {
-            Integer.parseInt(input.get(name));
-            builder.set(name, Integer.parseInt(input.get(name)));
-            System.out.println(Integer.parseInt(input.get(name)) + "was successful");
+            System.out.println((String) input.get(name));
 
-            error.set(name, input.get(name));
+            Integer.parseInt(input.get(name));
+            validRecordList.add(Integer.parseInt(input.get(name)));
 
           } catch (Exception e) {
-            error.set(name, input.get(name));
 
-            // Need to remove records in the future
-            // Rather than add all fields to both error and non-error schemas
-            builder.set(name, input.get(name));
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
 
           }
+
         }
 
         else if (inputSchema.get(iterator).equals("string")) {
 
           try {
             String outputString = input.get(name).toString();
-            builder.set(name, outputString);
-            System.out.println(outputString + "was successful");
 
-            error.set(name, input.get(name));
+            validRecordList.add(outputString);
 
           } catch (Exception e) {
-            error.set(name, input.get(name));
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
 
-            builder.set(name, input.get(name));
           }
         }
+
+        else if (inputSchema.get(iterator).equals("float")) {
+
+          try {
+            Float.parseFloat(input.get(name));
+
+            validRecordList.add(Float.parseFloat(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("long")) {
+
+          try {
+            Long.parseLong(input.get(name));
+
+            validRecordList.add(Long.parseLong(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("double")) {
+
+          try {
+            Double.parseDouble(input.get(name));
+
+            validRecordList.add(Double.parseDouble(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("boolean")) {
+
+          try {
+            Boolean.parseBoolean(input.get(name));
+
+            validRecordList.add(Boolean.parseBoolean(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        else if (inputSchema.get(iterator).equals("bytes")) {
+
+          try {
+            Byte.parseByte(input.get(name));
+
+            validRecordList.add(Byte.parseByte(input.get(name)));
+          }
+          catch (Exception e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+
+        /*
+        else if (inputSchema.get(iterator).equals("timestamp")) {
+
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-uuuu HH:mm:ss:SSS");
+          try {
+            LocalDateTime.parse(input.get(name), formatter);
+            validRecordList.add(input.get(name));
+          }
+          catch (DateTimeParseException e) {
+            invalidRecordList.add(input.get(name));
+            validRecordList.add(input.get(name));
+          }
+        }
+        */
         iterator++;
       }
     }
+        int result = setRecords(invalidRecordList);
+        System.out.println(validRecordList.size());
+
+        int rt = 0;
+        // No errors
+        if (result == 1) {
+          while (rt < fields.size()) {
+            builder.set(fields.get(rt).getName(), validRecordList.get(rt));
+            rt++;
+          }
+        }
+        else if (result == 2) {
+          while (rt < fields.size()) {
+            error.set(fields.get(rt).getName(), validRecordList.get(rt));
+            rt++;
+          }
+        }
+
     // If you wanted to make additional changes to the output record, this might be a good place to do it.
-    InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
 
+    if (!invalidRecordList.isEmpty()) {
+      InvalidEntry<StructuredRecord> invalidEntry = new InvalidEntry<>(1, "Records do not match schema", error.build());
+      emitter.emitError(invalidEntry);
+    }
 
-    // Finally, build and emit the record.
-    emitter.emit(builder.build());
-    emitter.emitError(invalidEntry);
+    else {
+
+      // Finally, build and emit the record.
+      emitter.emit(builder.build());
+    }
   }
 
   // Set Output Schema
   private static Schema getOutputSchema(Config config, Schema inputSchema) {
     List<Schema.Field> fields = new ArrayList<>();
 
-    fields.add(Schema.Field.of("int-valid", Schema.of(Schema.Type.INT)));
-    fields.add(Schema.Field.of("int-invalid", Schema.of(Schema.Type.INT)));
-    fields.add(Schema.Field.of("str-valid", Schema.of(Schema.Type.STRING)));
-    fields.add(Schema.Field.of("str-invalid", Schema.of(Schema.Type.STRING)));
+    fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
+    fields.add(Schema.Field.of("age", Schema.of(Schema.Type.INT)));
+    fields.add(Schema.Field.of("date", Schema.of(Schema.Type.STRING)));
 
     return Schema.recordOf(inputSchema.getRecordName(), fields);
   }
+
+  // Emit whole records
+  public static int setRecords(ArrayList<Object> invalidRecordList) {
+
+    if (invalidRecordList.isEmpty()) {
+     return 1;
+    }
+
+    else {
+      return 2;
+    }
+  }
+
 
   /**
    * This function will be called at the end of the pipeline. You can use it to clean up any variables or connections.
