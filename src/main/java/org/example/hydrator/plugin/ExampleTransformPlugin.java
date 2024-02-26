@@ -27,10 +27,14 @@ import io.cdap.cdap.etl.api.Emitter;
 import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.Transform;
 import io.cdap.cdap.etl.api.TransformContext;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -83,6 +87,15 @@ public class ExampleTransformPlugin extends Transform<StructuredRecord, Structur
    */
   @Override
   public void initialize(TransformContext context) throws Exception {
+    LOG.info("in initialize");
+    Configuration conf = new Configuration();
+    String path = "hdfs://cdap-fs.default:9000/dir/foo";
+    Path path_hdfs = new Path(path);
+    Path path_local = new Path("/tmp/foo");
+    FileSystem fs = FileSystem.get(URI.create(path), conf);
+    fs.copyToLocalFile(path_hdfs, path_local);
+    LOG.info("initialize done");
+
     super.initialize(context);
     outputSchema = Schema.parseJson(config.schema);
   }
